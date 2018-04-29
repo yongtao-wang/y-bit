@@ -59,3 +59,27 @@ class Blockchain:
     def last_block(self):
         # return the last block in the chain
         return self.chain[-1]
+
+    def proof_of_work(self, last_proof):
+        """
+        looking for a P', to make hash(P * P') starts with 4 zeroes
+        P is the proof of a block, P' is the proof of the current block
+        :param last_proof: <int>
+        :return: <int>
+        """
+        proof = 0
+        while self.valid_proof(last_proof, proof) is False:
+            proof += 1
+        return proof
+
+    @staticmethod
+    def valid_proof(last_proof, proof):
+        """
+        verify whether a PoW is valid
+        :param last_proof: <int>
+        :param proof: <int>
+        :return:
+        """
+        guess = str(last_proof * proof).encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        return guess_hash[:4] == "0000"
