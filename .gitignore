@@ -1,8 +1,4 @@
 # Created by .ignore support plugin (hsz.mobi)
-.idea/checkstyle-idea.xml
-.idea/misc.xml
-.idea/modules.xml
-.idea/vcs.xml
-.idea/workspace.xml
-.idea/y-bit.iml
+.idea/
 venv/
+src/*.pyc

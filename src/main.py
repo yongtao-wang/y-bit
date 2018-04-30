@@ -5,7 +5,6 @@ from flask import Flask, jsonify, request
 
 import block
 
-
 app = Flask(__name__)
 
 node_identifier = str(uuid4()).replace('-', '')
@@ -58,6 +57,11 @@ def full_chain():
         'length': len(blockchain.chain),
     }
     return jsonify(response), 200
+
+
+@app.route('/nodes/', methods=['GET'])
+def show_all_nodes():
+    return jsonify({'nodes': blockchain.nodes}), 200
 
 
 @app.route('/nodes/register', methods=['POST'])

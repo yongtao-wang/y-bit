@@ -56,6 +56,7 @@ class Blockchain:
         :param block:
         :return:
         """
+        # sort keys to ensure that for each block the hash remains the same
         block_string = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
 
@@ -84,7 +85,7 @@ class Blockchain:
         :param proof: <int>
         :return:
         """
-        guess = str(last_proof * proof).encode()
+        guess = str('%s%s'.format(last_proof, proof)).encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:4] == "0000"
 
