@@ -1,4 +1,5 @@
 from uuid import uuid4
+import argparse
 
 from flask import Flask, jsonify, request
 
@@ -12,7 +13,7 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = block.Blockchain()
 
 
-@app.route('/mine', methods='GET')
+@app.route('/mine', methods=['GET'])
 def mine():
     last_block = blockchain.last_block
     last_proof = last_block['proof']
@@ -36,7 +37,7 @@ def mine():
     return jsonify(response), 200
 
 
-@app.route('/transaction/new', methods='POST')
+@app.route('/transaction/new', methods=['POST'])
 def new_trans():
     values = request.get_json()
     required = ['sender', 'recipient', 'amount']
@@ -59,5 +60,40 @@ def full_chain():
     return jsonify(response), 200
 
 
+@app.route('/nodes/register', methods=['POST'])
+def register_nodes():
+    values = request.get_json()
+    nodes = values.get('nodes')
+    if not nodes:
+        return 'Error: invalid list of nodes', 400
+
+    response = {
+        'message': 'New node added',
+        'total_nodes': list(blockchain.nodes),
+    }
+    return jsonify(response), 201
+
+
+@app.route('/nodes/resolve', methods=['GET'])
+def resolve_conflicts():
+    replaced = blockchain.resolve_conflicts()
+    if replaced:
+        response = {
+            'message': 'block chain has been replaced',
+            'chain': blockchain.chain,
+        }
+    else:
+        response = {
+            'message': 'current block chain is up to date',
+            'chain': blockchain.chain,
+        }
+    return jsonify(response), 200
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument('-p', '--port', default=5000, type=int, help='specify the port number')
+    args = arg_parser.parse_args()
+    port = args.port
+
+    app.run(host='0.0.0.0', port=port)
